@@ -1,0 +1,197 @@
+openapi: 3.0.0
+info:
+  title: Catálogo de Livros API
+  version: 1.0.0
+  description: API REST para catálogo de livros com autenticação JWT
+tags:
+  - name: Auth
+    description: Autenticação e login
+  - name: Livros
+    description: Operações de CRUD de livros
+  - name: Usuário
+    description: Dados do usuário autenticado
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: "Livro 1"
+        autor:
+          type: string
+          example: "Autor 1"
+        ano:
+          type: integer
+          example: 2020
+    BookInput:
+      type: object
+      properties:
+        titulo:
+          type: string
+          example: "Livro 1"
+        autor:
+          type: string
+          example: "Autor 1"
+        ano:
+          type: integer
+          example: 2020
+      required:
+        - titulo
+        - autor
+        - ano
+    User:
+      type: object
+      properties:
+        login:
+          type: string
+          example: "admin"
+security: []
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                senha:
+                  type: string
+      responses:
+        '200':
+          description: Token JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+  /books:
+    get:
+      tags: [Livros]
+      summary: Lista todos os livros
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de livros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      tags: [Livros]
+      summary: Cria um livro
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: Livro criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+  /books/{id}:
+    get:
+      tags: [Livros]
+      summary: Consulta detalhes de um livro
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalhes do livro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Livro não encontrado
+    put:
+      tags: [Livros]
+      summary: Atualiza um livro
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '200':
+          description: Livro atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Livro não encontrado
+    delete:
+      tags: [Livros]
+      summary: Remove um livro
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Removido
+        '404':
+          description: Livro não encontrado
+  /users/me:
+    get:
+      tags: [Usuário]
+      summary: Dados do usuário autenticado
+      description: Retorna os dados do usuário autenticado. Requer autenticação JWT.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dados do usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                login: "admin"
+
