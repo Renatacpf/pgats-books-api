@@ -25,7 +25,7 @@ jobs:
             curl -sf http://localhost:4010/docs && break
             sleep 1
           done
-          npm run test:all
+          npm test
           npm run allure:generate
       - name: Deploy Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
