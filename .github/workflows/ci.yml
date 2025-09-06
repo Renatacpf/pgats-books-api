@@ -26,6 +26,8 @@ jobs:
             sleep 1
           done
           npm test
+          echo "Conteúdo de allure-results antes de gerar o relatório:"
+          ls -l allure-results || echo "Diretório allure-results não existe"
           npm run allure:generate
       - name: Deploy Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
