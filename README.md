@@ -175,7 +175,19 @@ mutation {
 
 ## Relatório visual dos testes
 
+
 Relatório Allure: [Allure Report - GitHub Pages](https://renatacpf.github.io/pgats-books-api/)
+
+**Importante:** Para evitar duplicidade de cenários no relatório Allure, limpe a pasta `allure-results` antes de rodar os testes:
+
+```bash
+rm -rf allure-results
+npm test
+npm run allure:generate
+npm run allure:open
+```
+
+Se o relatório mostrar cenários duplicados, certifique-se de que a pasta `allure-results` foi limpa antes de rodar os testes.
 
 ## Scripts
 ```
