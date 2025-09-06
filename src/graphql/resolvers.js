@@ -4,7 +4,12 @@ const authService = require('../service/authService');
 
 module.exports = {
   Query: {
-    me: (_, __, { user }) => user ? { login: user.login } : null,
+    me: (_, __, { user }) => user ? {
+      login: user.login,
+      nome: user.nome,
+      idade: user.idade,
+      sexo: user.sexo
+    } : null,
     books: (_, __, { user }) => user ? bookModel.getAll() : [],
     book: (_, { id }, { user }) => user ? bookModel.getById(id) : null,
   },

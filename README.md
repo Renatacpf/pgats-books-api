@@ -22,11 +22,38 @@ API REST + GraphQL para catálogo de livros com autenticação JWT.
   ```
   O servidor Express irá subir na porta definida (padrão: 4010).
 
-## Endpoints principais
+## APIs disponíveis
 
-- REST: `/`
-- Swagger: [`/docs`](http://localhost:4010/docs)
-- GraphQL: [`/graphql`](http://localhost:4010/graphql)
+### REST
+
+| Método | Caminho           | Descrição                       |
+|--------|-------------------|---------------------------------|
+| POST   | /auth/login       | Autenticação e obtenção do token|
+| GET    | /books            | Lista todos os livros           |
+| POST   | /books            | Cria um novo livro              |
+| GET    | /books/{id}       | Consulta detalhes de um livro   |
+| PUT    | /books/{id}       | Atualiza um livro               |
+| DELETE | /books/{id}       | Remove um livro                 |
+| GET    | /users/me         | Dados do usuário autenticado    |
+
+### Swagger
+
+- [`/docs`](http://localhost:4010/docs) — Documentação interativa
+
+### GraphQL
+
+- [`/graphql`](http://localhost:4010/graphql)
+
+**Queries:**
+  - `me`: Dados do usuário autenticado
+  - `books`: Lista todos os livros
+  - `book(id)`: Consulta detalhes de um livro
+
+**Mutations:**
+  - `login(login, senha)`: Autenticação e obtenção do token
+  - `createBook(titulo, autor, ano)`: Cria um novo livro
+  - `updateBook(id, titulo, autor, ano)`: Atualiza um livro
+  - `deleteBook(id)`: Remove um livro
 ## Detalhes técnicos
 
 - Node.js + Express
