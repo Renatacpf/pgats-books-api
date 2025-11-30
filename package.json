@@ -14,7 +14,10 @@
     "test:all": "start-server-and-test start http://localhost:4010/docs 'mocha \"test/**/*.test.js\"'",
     "coverage": "nyc --reporter=lcov --reporter=text-summary npm run test",
     "allure:generate": "allure generate allure-results --clean -o allure-report",
-    "allure:open": "allure open allure-report"
+    "allure:open": "allure open allure-report",
+    "k6:test": "k6 run test/k6/performance-test.js",
+    "k6:dashboard": "K6_WEB_DASHBOARD=true k6 run test/k6/performance-test.js",
+    "performance:test": "npm run k6:test"
   },
   "author": "RenataCPF",
   "license": "MIT",

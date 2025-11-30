@@ -3,3 +3,8 @@ node_modules/
 allure-report/
 allure-results/
 coverage/
+
+# Resultados dos testes K6
+*.k6.json
+*.k6.html
+html-report.html

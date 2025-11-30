@@ -169,9 +169,34 @@ mutation {
 
 ## Testes automatizados
 
+### Testes Funcionais
 - Mocha, Chai, Supertest, Sinon
 - Testes de controller, REST, GraphQL e external (HTTP real)
 - Use `npm run test:all` para rodar todos os testes com o servidor ativo
+
+### Testes de Performance (K6)
+Teste de performance baseado na aula: login + operação autenticada.
+
+```bash
+# Comando básico
+k6 run test/k6/performance-test.js
+
+# Com Web Dashboard (interface gráfica em tempo real)
+K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_PERIOD=2s k6 run test/k6/performance-test.js
+
+# Com Web Dashboard + relatório HTML exportado
+K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=html-report.html K6_WEB_DASHBOARD_PERIOD=2s k6 run test/k6/performance-test.js
+
+# Ou via npm script
+npm run k6:test
+
+# Instalar K6: https://k6.io/docs/getting-started/installation/
+```
+
+**💡 Web Dashboard:** Use `K6_WEB_DASHBOARD=true` para visualizar métricas em tempo real no navegador (http://localhost:5665)
+
+**📁 Arquivo:** [`test/k6/performance-test.js`](test/k6/performance-test.js)  
+**Status:** ✅ Teste validado e funcionando
 
 ## Relatório visual dos testes
 
@@ -190,9 +215,12 @@ npm run allure:open
 Se o relatório mostrar cenários duplicados, certifique-se de que a pasta `allure-results` foi limpa antes de rodar os testes.
 
 ## Scripts
-```
+```bash
+# Servidor
 npm start             # Inicia API
 npm run dev           # Inicia com nodemon
+
+# Testes Funcionais
 npm test              # Executa todos os testes com Allure
 npm run test:controller # Testes isolados de controller
 npm run test:rest     # Testes REST
@@ -200,6 +228,13 @@ npm run test:graphql  # Testes GraphQL
 npm run test:external # Testes HTTP reais (com servidor)
 npm run test:all      # Executa todos os testes (controller + external) com servidor ativo
 npm run coverage      # Cobertura de testes
+
+# Testes de Performance (K6)
+npm run k6:test          # Teste de performance K6 (10 usuários, 20s)
+npm run k6:dashboard     # Teste com Web Dashboard (interface gráfica)
+npm run performance:test # Alias para k6:test
+
+# Relatórios
 npm run allure:generate # Gera relatório Allure
 npm run allure:open   # Abre relatório Allure local
 ```
