@@ -175,28 +175,18 @@ mutation {
 - Use `npm run test:all` para rodar todos os testes com o servidor ativo
 
 ### Testes de Performance (K6)
-Teste de performance baseado na aula: login + operação autenticada.
+
+Testes de performance implementados com K6, incluindo todos os conceitos fundamentais de testes de carga.
 
 ```bash
-# Comando básico
-k6 run test/k6/performance-test.js
-
-# Com Web Dashboard (interface gráfica em tempo real)
-K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_PERIOD=2s k6 run test/k6/performance-test.js
-
-# Com Web Dashboard + relatório HTML exportado
-K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=html-report.html K6_WEB_DASHBOARD_PERIOD=2s k6 run test/k6/performance-test.js
+# Executar testes com Web Dashboard e relatorio HTML
+echo "=== Web Dashboard disponivel em: http://localhost:5665 ===" && K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=html-report.html K6_WEB_DASHBOARD_PERIOD=2s ./k6.exe run test/k6/performance-test.js 2>error.log
 
 # Ou via npm script
 npm run k6:test
-
-# Instalar K6: https://k6.io/docs/getting-started/installation/
 ```
 
-**💡 Web Dashboard:** Use `K6_WEB_DASHBOARD=true` para visualizar métricas em tempo real no navegador (http://localhost:5665)
-
-**📁 Arquivo:** [`test/k6/performance-test.js`](test/k6/performance-test.js)  
-**Status:** ✅ Teste validado e funcionando
+IMPORTANTE: Este projeto utiliza K6 customizado (k6.exe) com extensao faker. Para mais informacoes sobre instalacao e conceitos implementados, consulte o arquivo test/k6/README.md.
 
 ## Relatório visual dos testes
 

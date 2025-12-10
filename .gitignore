@@ -8,3 +8,7 @@ coverage/
 *.k6.json
 *.k6.html
 html-report.html
+error.log
+
+# K6 executavel customizado (muito grande para o repo)
+k6.exe

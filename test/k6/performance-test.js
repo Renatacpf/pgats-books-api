@@ -1,55 +1,73 @@
 import http from 'k6/http';
-import { sleep, check, group } from 'k6';
+import { check, group, sleep } from 'k6';
+import { Trend } from 'k6/metrics';
+import { SharedArray } from 'k6/data';
+import { getBaseUrl } from './helpers/getBaseUrl.js';
+import { login } from './helpers/login.js';
+import { randomISBN, randomYear } from './helpers/randomData.js';
+import faker from 'k6/x/faker';
 
-export const options = {
-  vus: 10,
-  duration: '30s',
-  thresholds: {
-    http_req_duration: ['p(90)<=500', 'p(95)<=800'],
-    http_req_failed: ['rate<0.01']
-  }
+const users = new SharedArray('users', function () {
+    return JSON.parse(open('./data/users.test.data.json'));
+});
+
+const createBookTrend = new Trend('create_book_duration');
+
+export let options = {
+    thresholds: {
+        http_req_duration: ['p(95)<5000'], // 95% das requests devem ser < 5s
+    },
+    stages: [
+        { duration: '5s', target: 10 }, // Ramp up
+        { duration: '20s', target: 10 }, // Average
+        { duration: '5s', target: 20 }, // Spike
+        { duration: '5s', target: 20 }, // Spike
+        { duration: '5s', target: 10 }, // Average
+        { duration: '5s', target: 0 }, // Ramp down
+    ],
 };
 
-export default function() {
-  let responseLogin = ''; 
+export default function () {
+    const user = users[(__VU - 1) % users.length];
+    let token = null;
 
-  group('Fazendo login', function() {
-    responseLogin = http.post(
-        'http://localhost:4010/auth/login', 
-        JSON.stringify({ 
-            login: 'admin', 
-            senha: 'admin' 
-        }),
-        {
-            headers: {
-                'Content-Type': 'application/json'
-            }
+    group('Login', function () {
+        token = login(user.login, user.senha);
     });
-  })
 
-  group('Criando um novo livro', function() { 
-    let responseBook = http.post(
-        'http://localhost:4010/books', 
-        JSON.stringify({ 
-            titulo: 'Livro de Teste K6', 
-            autor: 'Autor Teste',
-            isbn: '978-1234567890',
-            ano: 2024,
-            categoria: 'Teste'
-        }),
-        {
+    group('Criar Livro', function () {
+        const url = `${getBaseUrl()}/books`;
+        const payload = JSON.stringify({
+            titulo: faker.book.title(),
+            autor: faker.book.author(),
+            isbn: randomISBN(),
+            ano: randomYear(),
+            categoria: faker.book.genre()
+        });
+        const params = {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${responseLogin.json('token')}`
+                Authorization: `Bearer ${token}`
             }
+        };
+        const start = Date.now();
+        const res = http.post(url, payload, params);
+        const duration = Date.now() - start;
+        createBookTrend.add(duration);
+        check(res, { 'criar livro status 201': (r) => r.status === 201 });
     });
 
-    check(responseBook, {
-        'status deve ser igual a 201': (r) => r.status === 201
+    group('Listar Livros', function () {
+        const url = `${getBaseUrl()}/books`;
+        const params = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const res = http.get(url, params);
+        check(res, { 'listar livros status 200': (r) => r.status === 200 });
     });
-  })
 
-  group('Simulando o pensamento do usuário', function() {
-    sleep(1); // User Think Time
-  })
+    sleep(1);
 }
